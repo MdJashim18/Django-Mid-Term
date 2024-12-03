@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="">
+    
+<div class="row align-items-center p-3" style="width:100%;margin:auto;" >
+    <div class="col-6">
+        <img src="{{ car.image.url }}" alt="{{ car.title }}" style="width:100%;">
+    </div>
+    <div class="col-6">
+        <h1 style="color:gray;font-size:20px" ><strong>Title:</strong> {{ car.title }}</h1>
+        <p style="color:gray;font-size:20px" ><strong>Description:</strong> {{ car.description }}</p>
+        <p style="color:gray;font-size:20px"><strong>Brand:</strong> {{ car.brand.name }}</p>
+        <p style="color:gray;font-size:20px"><strong>Price:</strong>${{ car.price }}</p>
+
+        
+        {% if user.is_authenticated %}
+        <form method="POST" action="{% url 'car-buy' car.pk %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-warning">Buy Now</button>
+        </form>
+        {% else %}
+        <a href="{% url 'login' %}?next={% url 'car-detail' car.pk %}" class="btn btn-warning">Login to Buy</a>
+        {% endif %}
+
+    </div>
+</div>
+
+
+
+
+
+
+    <!-- Comments Section -->
+    <h2 style="margin:auto;" class="text-center my-3" >Comments ({{ comments|length }})</h2>
+    <ul>
+        {% for comment in comments %}
+        <li>
+            <strong>{{ comment.name }}</strong>: {{ comment.text }} 
+            <small>({{ comment.created_at|date:"d M Y, H:i" }})</small>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <!-- Comment Form -->
+    <h3 style="margin:auto;" class="text-center my-3" >Leave a Comment</h3>
+    <form method="post" style="width:70%;margin:auto;" class="my-2" >
+        {% csrf_token %}
+        {{ comment_form | crispy }}
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+
+{% endblock %}
